@@ -4,70 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9ee2cd43-97d2-4462-aad2-1367aae3e01a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.copilot-plugin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vaadin/IndexView.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vaadin/TallerAutomotrizLP.java" beforeDir="false" />
-    </list>
+    <list default="true" id="7410dc62-7c9f-42f8-8121-ddb1dad081ac" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {}
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Aristi208/ProyectoFinalLP.git&quot;,
-    &quot;accountId&quot;: &quot;aba07b8a-0a94-451a-a29c-ec171de40a87&quot;
-  }
-}</component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="34fRgymL72cTEmCpALMNk4gPtwv" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="34kuUNXRuPLibcpp8CBZ6mNfok8" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.TallerAutomotrizLP.executor": "Run",
+    "Application.Main.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "onboarding.tips.debug.path": "C:/Users/camil/OneDrive/Escritorio/ProyectoFinalLP/TallerAutomotrizLP/src/main/java/com/vaadin/Main.java",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vaadin.notify.HotSwap": "false"
+    "onboarding.tips.debug.path": "C:/Users/camil/OneDrive/Escritorio/Prueba/src/main/java/com/example/Main.java"
   }
 }]]></component>
   <component name="RunManager">
-    <configuration name="TallerAutomotrizLP" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.vaadin.TallerAutomotrizLP" />
-      <module name="TallerAutomotrizLP" />
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.Main" />
+      <module name="Prueba" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.vaadin.*" />
+          <option name="PATTERN" value="com.example.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -77,41 +42,18 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.TallerAutomotrizLP" />
+        <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="9ee2cd43-97d2-4462-aad2-1367aae3e01a" name="Changes" comment="" />
-      <created>1761602755164</created>
+      <changelist id="7410dc62-7c9f-42f8-8121-ddb1dad081ac" name="Changes" comment="" />
+      <created>1761769905919</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1761602755164</updated>
+      <updated>1761769905919</updated>
     </task>
-    <task id="LOCAL-00001" summary="Tercer Commit: configuracion del aparatado pom.xml">
-      <option name="closed" value="true" />
-      <created>1761603752524</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1761603752524</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Cuarto Commit: configuracio inicial &quot;terminada - necesita revision&quot;">
-      <option name="closed" value="true" />
-      <created>1761605634875</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1761605634875</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
     <servers />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Segundo commit: Correccion de creacion del proyecto" />
-    <MESSAGE value="Tercer Commit: configuracion del aparatado pom.xml" />
-    <MESSAGE value="Cuarto Commit: configuracio inicial &quot;terminada - necesita revision&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cuarto Commit: configuracio inicial &quot;terminada - necesita revision&quot;" />
   </component>
 </project>

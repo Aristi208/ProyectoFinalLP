@@ -4,14 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.vaadin</groupId>
-    <artifactId>TallerAutmotrizLP</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>Prueba</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <exec.mainClass>com.example.Main</exec.mainClass>
         <vaadin.version>24.1.2</vaadin.version> <!-- Vaadin version -->
         <spring-boot.version>3.1.2</spring-boot.version> <!-- Versión de Spring Boot -->
     </properties>
@@ -29,6 +30,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
 
         <!-- Spring Boot Dependency for Vaadin -->
@@ -45,6 +54,7 @@
             <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
