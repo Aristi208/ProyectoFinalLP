@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7410dc62-7c9f-42f8-8121-ddb1dad081ac" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/IndexView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.copilot-plugin" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.copilot-plugin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/generated/flow/generated-flow-imports.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/generated/flow/generated-flow-imports.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/IndexView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/IndexView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,9 +53,16 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/camil/OneDrive/Escritorio/ProyectoFinalLP/TallerAutomotrizLP&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/camil/OneDrive/Escritorio/Prueba/src/main/java/com/example/Main.java&quot;
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/camil/OneDrive/Escritorio/Prueba/src/main/java/com/example/Main.java&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\camil\OneDrive\Escritorio\ProyectoFinalLP\TallerAutomotrizLP\src\main\resources" />
+      <recent name="C:\Users\camil\OneDrive\Escritorio\ProyectoFinalLP\TallerAutomotrizLP\src\main\resources\Images" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.Main" />
