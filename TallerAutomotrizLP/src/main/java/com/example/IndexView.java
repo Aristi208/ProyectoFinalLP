@@ -33,7 +33,7 @@ public class IndexView extends VerticalLayout {
 
         // IA: este fragmento de codigo tiene la funcion de asignarle una imagen al fondo de pantalla de nuestra pagina
         getStyle()
-                .set("background-image", "url('https://i.ibb.co/wZc5bJr0/wallhaven-8g5p52.jpg')")
+                .set("background-image", "url('https://i.ibb.co/k6Qkth1r/wallhaven-2yo6zm.png')")
                 .set("background-size", "cover")        // La imagen cubre toda la pantalla
                 .set("background-position", "center")   // Centra la imagen
                 .set("background-repeat", "no-repeat")  // Evita que se repita
@@ -45,13 +45,18 @@ public class IndexView extends VerticalLayout {
         FormLayout formularioInteractivo = new FormLayout();
         formularioInteractivo.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
 
+        FormLayout galeria = new FormLayout();
+        galeria.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 3));
+
         // Invocamos la funcion constructora del Hero
 
         construirHero(hero);
 
         construirformularioInteractivo(formularioInteractivo);
 
-        main.add(hero, formularioInteractivo);
+        construirGaleria(galeria);
+
+        main.add(hero, formularioInteractivo, galeria);
 
         add(main);
 
@@ -247,11 +252,6 @@ public class IndexView extends VerticalLayout {
 
             // Estilos para los multiples campos
 
-            nombreCliente.getStyle()
-                    .set("color", "white")
-                    .set("border-radius", "8px")
-                    .set("padding", "8px");
-
             // Estilo para el boton
             botonGuardar.getStyle()
                     .set("background-color", "red")
@@ -259,7 +259,7 @@ public class IndexView extends VerticalLayout {
                     .set("border-radius", "10px")
                     .set("padding", "10px 25px");
 
-            // .setWidthFull --> lo utilizamospara que los campos tomen todo el espacio del Layout padre (en este caso un VerticalLayout)
+            // .setWidthFull --> lo utilizamos para que los campos tomen todo el espacio del Layout padre (en este caso un VerticalLayout)
             nombreCliente.setWidthFull();
             idCliente.setWidthFull();
             servicios.setWidthFull();
@@ -349,6 +349,45 @@ public class IndexView extends VerticalLayout {
 
         } catch (Exception e) {
             throw new Exception("Error en funcion complementaria imagenes servicios " + e);
+        }
+    }
+
+    // Metodo para construir la galeria --> mostrará imagenes de vehiculos
+    public static void construirGaleria(FormLayout galeria) throws Exception {
+        try {
+
+            // Agregamos las imagenes que iran en la galeria
+            Image imagen1 = new Image("https://i.ibb.co/7N6svdpg/wallhaven-6dl2gw.jpg", "img1");
+            Image imagen2 = new Image("https://i.ibb.co/mCgzMLpk/wallhaven-5g3de1.png", "img2");
+            Image imagen3 = new Image("https://i.ibb.co/sddwxQkL/wallhaven-4dpo8m.jpg", "img3");
+
+            imagen1.getStyle()
+                    .set("border-radius", "15px")
+                    .set("object-fit", "cover")
+                    .set("box-shadow", "0 4px 10px rgba(0,0,0,0.3)")
+                    .set("transition", "transform 0.3s, box-shadow 0.3s")
+                    .set("cursor", "pointer");
+
+            imagen2.getStyle()
+                    .set("border-radius", "15px")
+                    .set("object-fit", "cover")
+                    .set("box-shadow", "0 4px 10px rgba(0,0,0,0.3)")
+                    .set("transition", "transform 0.3s, box-shadow 0.3s")
+                    .set("cursor", "pointer");
+
+            imagen2.setHeight("100%");
+
+            imagen3.getStyle()
+                    .set("border-radius", "15px")
+                    .set("object-fit", "cover")
+                    .set("box-shadow", "0 4px 10px rgba(0,0,0,0.3)")
+                    .set("transition", "transform 0.3s, box-shadow 0.3s")
+                    .set("cursor", "pointer");
+
+            galeria.add(imagen1, imagen2, imagen3);
+
+        } catch (Exception e) {
+            throw new Exception("Error en la creacion de la galeria " + e);
         }
     }
 
