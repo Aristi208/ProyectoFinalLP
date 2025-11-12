@@ -12,12 +12,17 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import org.jsoup.helper.ValidationException;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.InputMismatchException;
 import java.util.Set;
 
 @Route("")
@@ -27,38 +32,44 @@ public class IndexView extends VerticalLayout {
     // Metodo constructor
     public IndexView() throws Exception {
 
-        // Construccion principal de la pagina --> creacion de los VerticalLayouts y FormLayouts
+        try{
 
-        VerticalLayout main = new VerticalLayout();
+            // Construccion principal de la pagina --> creacion de los VerticalLayouts y FormLayouts
 
-        // IA: este fragmento de codigo tiene la funcion de asignarle una imagen al fondo de pantalla de nuestra pagina
-        getStyle()
-                .set("background-image", "url('https://i.ibb.co/k6Qkth1r/wallhaven-2yo6zm.png')")
-                .set("background-size", "cover")        // La imagen cubre toda la pantalla
-                .set("background-position", "center")   // Centra la imagen
-                .set("background-repeat", "no-repeat")  // Evita que se repita
-                .set("min-height", "100vh");            // Ocupa toda la ventana
+            VerticalLayout main = new VerticalLayout();
 
-        FormLayout hero = new FormLayout();
-        hero.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
+            // IA: este fragmento de codigo tiene la funcion de asignarle una imagen al fondo de pantalla de nuestra pagina
+            getStyle()
+                    .set("background-image", "url('https://i.ibb.co/k6Qkth1r/wallhaven-2yo6zm.png')")
+                    .set("background-size", "cover")        // La imagen cubre toda la pantalla
+                    .set("background-position", "center")   // Centra la imagen
+                    .set("background-repeat", "no-repeat")  // Evita que se repita
+                    .set("min-height", "100vh");            // Ocupa toda la ventana
 
-        FormLayout formularioInteractivo = new FormLayout();
-        formularioInteractivo.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
+            FormLayout hero = new FormLayout();
+            hero.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
 
-        FormLayout galeria = new FormLayout();
-        galeria.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 3));
+            FormLayout formularioInteractivo = new FormLayout();
+            formularioInteractivo.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
 
-        // Invocamos la funcion constructora del Hero
+            FormLayout galeria = new FormLayout();
+            galeria.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 3));
 
-        construirHero(hero);
+            // Invocamos la funcion constructora del Hero
 
-        construirformularioInteractivo(formularioInteractivo);
+            construirHero(hero);
 
-        construirGaleria(galeria);
+            construirformularioInteractivo(formularioInteractivo);
 
-        main.add(hero, formularioInteractivo, galeria);
+            construirGaleria(galeria);
 
-        add(main);
+            main.add(hero, formularioInteractivo, galeria);
+
+            add(main);
+
+        } catch (Exception e) {
+            System.out.println("Error en la construccion principal de la pagina");
+        }
 
     }
 
@@ -171,10 +182,14 @@ public class IndexView extends VerticalLayout {
                     .set("font-weight", "bold")
                     .set("color", "black");
 
-            // IA: Campos del formulario --> nos habilita unos campos para ingresar la información requerida
-            TextField nombreCliente = new TextField("Nombre del cliente");
-            TextField idCliente = new TextField("ID del cliente");
-            TextField numeroCliente = new TextField("numero del cliente");
+                // IA: Campos del formulario --> nos habilita unos campos para ingresar la información requerida
+                TextField nombreCliente = new TextField("Nombre del cliente");
+
+                TextField idCliente = new TextField("ID del cliente");
+                idCliente.setHelperText("8 - 10 digitos");
+
+                TextField numeroCliente = new TextField("numero del cliente");
+                numeroCliente.setHelperText("10 digitos");
 
             // IA: ComboBox múltiple para Servicios --> nos despliega un mini menu en donde podemos seleccionar los diferentes tipos de servicio
             CheckboxGroup<String> servicios = new CheckboxGroup<>();
@@ -203,18 +218,61 @@ public class IndexView extends VerticalLayout {
             );
 
             TextField placaVehiculo = new TextField("Placa del vehículo");
+            placaVehiculo.setHelperText("ABC123");
 
             // IA: Selector de fecha --> nos sirve para que el usuario seleccione la fecha en la cual desea el servicio o la cita
+            LocalDate now = LocalDate.now(ZoneId.systemDefault());
+
             DatePicker fechaCita = new DatePicker("Fecha de la cita");
+
+            // Validaciones y control sobre le dia de la cita
+
+            fechaCita.setRequiredIndicatorVisible(true);
+            fechaCita.setMin(now);
+            fechaCita.setMax(now.plusDays(60));
+            fechaCita.setHelperText("Maximo 60 dias adelante de la fecha actual");
 
             // IA: Botón para guardar --> se encarga de guardar la información y recordarle al usuario si aun le falta agregar alguna información o rellenar algún campo
             Button botonGuardar = new Button("Guardar cita", event -> {
 
-                // Validación simple
+                // Validación simple para cada uno de los campos del formulario para evitar cualquier error
                 if (nombreCliente.isEmpty() || idCliente.isEmpty() || servicios.getSelectedItems().isEmpty()
                         || marcaVehiculo.isEmpty() || tipoVehiculo.getSelectedItems().isEmpty()
                         || placaVehiculo.isEmpty() || fechaCita.isEmpty()) {
                     Notification.show("⚠️ Por favor completa todos los campos antes de continuar.", 3000, Notification.Position.MIDDLE);
+
+                }
+                 else if (!(nombreCliente.getValue().matches("[a-zA-Z ]+"))) {
+
+                    Notification.show("⚠️ Ingresa valor valido, sin simbolos ni caracteres especiales", 3000, Notification.Position.MIDDLE);
+
+                    nombreCliente.clear();
+
+                } else if (idCliente.getValue().matches("[0-9]+") && !(idCliente.getValue().length() >= 8 && idCliente.getValue().length() <= 10) || idCliente.getValue().matches("[a-zA-Z ]+")){
+
+                    Notification.show("⚠️ Ingresa un ID / cedula valido", 3000, Notification.Position.MIDDLE);
+
+                    idCliente.clear();
+
+                }
+                else if ((numeroCliente.getValue().matches("[0-9]+")) && (!(numeroCliente.getValue().length() >= 1 && numeroCliente.getValue().length() <= 10)) || (numeroCliente.getValue().matches("[a-zA-Z ]+"))){
+
+                    Notification.show("⚠️ Ingresa un numero de tel / cel valido", 3000, Notification.Position.MIDDLE);
+
+                    numeroCliente.clear();
+
+                }
+                else if (!(marcaVehiculo.getValue().matches("[a-zA-Z ]+"))){
+
+                    Notification.show("⚠️ Ingresa un valor valido en la marca de vehiculo (solo letras)", 3000, Notification.Position.MIDDLE);
+
+                    marcaVehiculo.clear();
+
+                } else if (!(placaVehiculo.getValue().toUpperCase().matches("[A-Z]{3}[0-9]{3}"))){
+
+                    Notification.show("⚠️ Ingresa un placa valida (ABC123) para seguir", 3000, Notification.Position.MIDDLE);
+
+                    placaVehiculo.clear();
 
                 }
                 else {
@@ -240,6 +298,7 @@ public class IndexView extends VerticalLayout {
                     // IA: Limpieza opcional de campos --> se encarga de limpiar los campos para que el usuario no los tenga que borrar por sí mismo
                     nombreCliente.clear();
                     idCliente.clear();
+                    numeroCliente.clear();
                     servicios.clear();
                     marcaVehiculo.clear();
                     tipoVehiculo.clear();
@@ -262,6 +321,7 @@ public class IndexView extends VerticalLayout {
             // .setWidthFull --> lo utilizamos para que los campos tomen todo el espacio del Layout padre (en este caso un VerticalLayout)
             nombreCliente.setWidthFull();
             idCliente.setWidthFull();
+            numeroCliente.setWidthFull();
             servicios.setWidthFull();
             marcaVehiculo.setWidthFull();
             tipoVehiculo.setWidthFull();
@@ -270,7 +330,7 @@ public class IndexView extends VerticalLayout {
             botonGuardar.setWidthFull();
 
             // Agregamos los componentes al leftSide
-            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, servicios, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar);
+            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, numeroCliente, servicios, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar);
 
             // RightSide --> Mostrar servicios (título, imagenes de los servicios, definicion de que es cada uno)
 
@@ -374,8 +434,6 @@ public class IndexView extends VerticalLayout {
                     .set("box-shadow", "0 4px 10px rgba(0,0,0,0.3)")
                     .set("transition", "transform 0.3s, box-shadow 0.3s")
                     .set("cursor", "pointer");
-
-            imagen2.setHeight("100%");
 
             imagen3.getStyle()
                     .set("border-radius", "15px")
