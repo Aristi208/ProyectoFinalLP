@@ -1,5 +1,6 @@
 package com.example;
 
+import Controller.Procesos;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -202,6 +203,39 @@ public class IndexView extends VerticalLayout {
                     "Otros"
             );
 
+            // Mapa de repuestos/insumos disponibles por servicio
+            Map<String, List<String>> opcionesRepuestos = new LinkedHashMap<>();
+            opcionesRepuestos.put("Cambio de aceite", Arrays.asList("Filtro de aceite", "Aceite 5W30", "Junta de cárter"));
+            opcionesRepuestos.put("Cambio de frenos", Arrays.asList("Disco de freno", "Pastillas", "Sensor de desgaste"));
+            opcionesRepuestos.put("Mantenimiento de cajas automáticas", Arrays.asList("Filtro de caja", "Aceite de transmisión", "Kit de juntas"));
+            opcionesRepuestos.put("Otros", Arrays.asList("Correa de distribución", "Batería", "Bombilla"));
+
+            // Selector de repuestos/insumos que se actualiza según los servicios seleccionados
+            MultiSelectComboBox<String> repuestosCombo = new MultiSelectComboBox<>("Repuestos / insumos");
+            repuestosCombo.setWidth("300px");
+            repuestosCombo.setPlaceholder("Selecciona repuestos vinculados a los servicios");
+
+            // Cuando cambian los servicios seleccionados, actualizar las opciones de repuestos
+            servicios.addValueChangeListener(ev -> {
+                Set<String> seleccionados = ev.getValue();
+                List<String> items = new ArrayList<>();
+                if (seleccionados != null) {
+                    for (String serv : seleccionados) {
+                        List<String> parts = opcionesRepuestos.getOrDefault(serv, Collections.emptyList());
+                        for (String p : parts) {
+                            items.add(serv + " - " + p);
+                        }
+                    }
+                }
+                // Actualizar las opciones del combo
+                repuestosCombo.setItems(items);
+                // Si se quitan servicios, eliminar selecciones inválidas
+                Set<String> actuales = new LinkedHashSet<>(repuestosCombo.getSelectedItems());
+                actuales.retainAll(new LinkedHashSet<>(items));
+                repuestosCombo.clear();
+                repuestosCombo.select(actuales);
+            });
+
             // IA: Campos del formulario --> nos habilita unos campos para ingresar la información requerida
             TextField marcaVehiculo = new TextField("Marca del vehículo");
 
@@ -323,9 +357,10 @@ public class IndexView extends VerticalLayout {
 
             // .setWidthFull --> lo utilizamos para que los campos tomen todo el espacio del Layout padre (en este caso un VerticalLayout)
             serviciosExtra.setWidthFull();
+            repuestosCombo.setWidthFull();
 
             // Agregamos los componentes al leftSide
-            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, numeroCliente, servicios, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar, tituloServiciosExtra, serviciosExtra, guardarservicios);
+            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, numeroCliente, servicios, repuestosCombo, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar, tituloServiciosExtra, serviciosExtra, guardarservicios);
 
             // RightSide --> Mostrar servicios (título, imagenes de los servicios, definicion de que es cada uno)
 
@@ -393,6 +428,16 @@ public class IndexView extends VerticalLayout {
                  return container;
              }).setHeader("Servicios Extra");
 
+             // Mostrar repuestos / insumos como lista (formato: "Servicio - Repuesto")
+             grid.addComponentColumn(v -> {
+                 Div container = new Div();
+                 container.getStyle().set("display", "flex").set("flex-direction", "column").set("gap", "2px");
+                 for (String s : v.getRepuestos()) {
+                     container.add(new Span(s));
+                 }
+                 return container;
+             }).setHeader("Repuestos / insumos");
+
             grid.setWidth("600px");
             grid.getStyle()
                     .set("border", "2px solid #1E3A8A")
@@ -428,11 +473,37 @@ public class IndexView extends VerticalLayout {
                     return;
                 }
 
-                // Eliminar el vehículo seleccionado de la lista
-                vehiculosEnTaller.removeAll(vehiculosSeleccionados);
-                grid.setItems(vehiculosEnTaller);
+                Vehicle seleccionado = vehiculosSeleccionados.iterator().next();
 
-                Notification.show("✅ Vehículo facturado y eliminado de la tabla", 3000, Notification.Position.MIDDLE);
+                // Llamar a Procesos.generarFactura con los datos del vehículo seleccionado
+                try {
+                    List<String> serviciosList = seleccionado.getServiciosList();
+                    Collection<String> serviciosExtraColl = seleccionado.getServiciosExtra();
+                    Collection<String> repuestosColl = seleccionado.getRepuestos();
+
+                    String ruta = Procesos.generarFactura(
+                            seleccionado.getNombreCliente(),
+                            seleccionado.getCedulaCliente(),
+                            seleccionado.getTelefono(),
+                            seleccionado.getMarca(),
+                            seleccionado.getPlaca(),
+                            seleccionado.getTipoVehiculo(),
+                            serviciosList,
+                            serviciosExtraColl,
+                            repuestosColl
+                    );
+
+                    if (ruta != null && ruta.startsWith("ERROR:")) {
+                        Notification.show("❌ Error al generar factura: " + ruta, 8000, Notification.Position.MIDDLE);
+                    } else {
+                        // Eliminar el vehículo seleccionado de la lista solo si la factura se generó correctamente
+                        vehiculosEnTaller.remove(seleccionado);
+                        grid.setItems(vehiculosEnTaller);
+                        Notification.show("✅ Factura generada: " + ruta, 8000, Notification.Position.MIDDLE);
+                    }
+                } catch (Exception ex) {
+                    Notification.show("❌ Error al generar la factura: " + ex.getMessage(), 8000, Notification.Position.MIDDLE);
+                }
             });
 
             // --- Listener único del botón guardar ---
@@ -483,13 +554,20 @@ public class IndexView extends VerticalLayout {
                 // Los servicios extra al crear la cita deben quedar vacíos hasta que se apliquen vía "Guardar servicio extra"
                 Set<String> serviciosExtraSet = new LinkedHashSet<>();
 
-                // Crear objeto Vehicle y añadirlo a la lista
+                // Repuestos seleccionados para esta cita (formato: "Servicio - Repuesto")
+                Set<String> repuestosSet = new LinkedHashSet<>(repuestosCombo.getSelectedItems());
+
+                // Crear objeto Vehicle y añadirlo a la lista (guardar datos del cliente también)
                 Vehicle nuevo = new Vehicle(
+                        nombreCliente.getValue(),
+                        String.valueOf(idCliente.getValue()),
+                        String.valueOf(numeroCliente.getValue()),
                         placaVehiculo.getValue().toUpperCase(),
                         marcaVehiculo.getValue(),
                         tipoVehiculo.getValue(),
                         serviciosSeleccionadosStr,
-                        serviciosExtraSet
+                        serviciosExtraSet,
+                        repuestosSet
                 );
                 vehiculosEnTaller.add(nuevo);
                 grid.setItems(vehiculosEnTaller);
@@ -518,7 +596,8 @@ public class IndexView extends VerticalLayout {
                 placaVehiculo.clear();
                 fechaCita.clear();
                 serviciosExtra.clear();
-            });
+                repuestosCombo.clear();
+             });
 
             // Agregamos al RightSide
             rightSide.add(tituloServicios, recuadroServicios, tituloVehiculos, grid, facturarButton);
@@ -609,41 +688,48 @@ public class IndexView extends VerticalLayout {
 
     // POJO para representar un vehículo en la tabla
      private static class Vehicle {
+         // Datos del cliente
+         private final String nombreCliente;
+         private final String cedulaCliente;
+         private final String telefonoCliente;
+
+         // Datos del vehículo
          private final String placa;
          private final String marca;
          private final String tipoVehiculo;
-         private final String servicios;
+         private final String servicios; // servicios principales como cadena
+
          // ahora guardamos los servicios extra en un Set mutable para evitar duplicados
          private final Set<String> serviciosExtra;
+         // Repuestos / insumos vinculados a este vehículo (formato: "Servicio - Repuesto")
+         private final Set<String> repuestos;
 
-        public Vehicle(String placa, String marca, String tipoVehiculo, String servicios, Set<String> serviciosExtra) {
+        // Constructor completo
+        public Vehicle(String nombreCliente, String cedulaCliente, String telefonoCliente,
+                       String placa, String marca, String tipoVehiculo, String servicios,
+                      Set<String> serviciosExtra, Set<String> repuestos) {
+            this.nombreCliente = nombreCliente;
+            this.cedulaCliente = cedulaCliente;
+            this.telefonoCliente = telefonoCliente;
             this.placa = placa;
             this.marca = marca;
             this.tipoVehiculo = tipoVehiculo;
             this.servicios = servicios;
-            // inicializar con LinkedHashSet para mantener el orden de inserción
             this.serviciosExtra = serviciosExtra != null ? new LinkedHashSet<>(serviciosExtra) : new LinkedHashSet<>();
+            this.repuestos = repuestos != null ? new LinkedHashSet<>(repuestos) : new LinkedHashSet<>();
         }
 
-        public String getPlaca() {
-            return placa;
-        }
+        public String getNombreCliente() { return nombreCliente; }
+        public String getCedulaCliente() { return cedulaCliente; }
+        public String getTelefono() { return telefonoCliente; }
 
-        public String getMarca() {
-            return marca;
-        }
+        public String getPlaca() { return placa; }
+        public String getMarca() { return marca; }
+        public String getTipoVehiculo() { return tipoVehiculo; }
+        public String getServicios() { return servicios; }
 
-        public String getTipoVehiculo() {
-            return tipoVehiculo;
-        }
-
-        public String getServicios() {
-            return servicios;
-        }
-
-        public Set<String> getServiciosExtra() {
-            return serviciosExtra;
-         }
+        public Set<String> getServiciosExtra() { return serviciosExtra; }
+        public Set<String> getRepuestos() { return repuestos; }
 
         // Devuelve la lista de servicios principales (separados por coma) como lista
         public List<String> getServiciosList() {
@@ -652,11 +738,16 @@ public class IndexView extends VerticalLayout {
             return Arrays.asList(parts);
         }
 
-         // Añade nuevos servicios extra, evitando duplicados
-         public void addServiciosExtra(Collection<String> extras) {
-             if (extras == null || extras.isEmpty()) return;
-             this.serviciosExtra.addAll(extras);
-         }
-     }
+        // Añade nuevos servicios extra, evitando duplicados
+        public void addServiciosExtra(Collection<String> extras) {
+            if (extras == null || extras.isEmpty()) return;
+            this.serviciosExtra.addAll(extras);
+        }
 
- }
+        // Añade repuestos/insumos (formato: "Servicio - Repuesto")
+        public void addRepuestos(Collection<String> items) {
+            if (items == null || items.isEmpty()) return;
+            this.repuestos.addAll(items);
+        }
+    }
+}
