@@ -1,29 +1,30 @@
 package com.example;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import org.jsoup.helper.ValidationException;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.InputMismatchException;
-import java.util.Set;
+import java.util.*;
 
 @Route("")
 public class IndexView extends VerticalLayout {
@@ -182,14 +183,14 @@ public class IndexView extends VerticalLayout {
                     .set("font-weight", "bold")
                     .set("color", "black");
 
-                // IA: Campos del formulario --> nos habilita unos campos para ingresar la información requerida
-                TextField nombreCliente = new TextField("Nombre del cliente");
+            // IA: Campos del formulario --> nos habilita unos campos para ingresar la información requerida
+            TextField nombreCliente = new TextField("Nombre del cliente");
 
-                TextField idCliente = new TextField("ID del cliente");
-                idCliente.setHelperText("8 - 10 digitos");
+            IntegerField idCliente = new IntegerField("ID del cliente");
+            idCliente.setHelperText("8 - 10 digitos");
 
-                TextField numeroCliente = new TextField("numero del cliente");
-                numeroCliente.setHelperText("10 digitos");
+            IntegerField numeroCliente = new IntegerField("numero del cliente");
+            numeroCliente.setHelperText("10 digitos");
 
             // IA: ComboBox múltiple para Servicios --> nos despliega un mini menu en donde podemos seleccionar los diferentes tipos de servicio
             CheckboxGroup<String> servicios = new CheckboxGroup<>();
@@ -205,7 +206,7 @@ public class IndexView extends VerticalLayout {
             TextField marcaVehiculo = new TextField("Marca del vehículo");
 
             // IA: ComboBox múltiple para Tipo de vehículo --> nos despliega un mini menu en donde podemos seleccionar los diferentes tipos de vehiculos a los que se le realizan servicio
-            CheckboxGroup<String> tipoVehiculo = new CheckboxGroup<>();
+            RadioButtonGroup<String> tipoVehiculo = new RadioButtonGroup<>();
             tipoVehiculo.setLabel("Tipo de vehículo");
             tipoVehiculo.setItems(
                     "Gasolina",
@@ -232,82 +233,8 @@ public class IndexView extends VerticalLayout {
             fechaCita.setMax(now.plusDays(60));
             fechaCita.setHelperText("Maximo 60 dias adelante de la fecha actual");
 
-            // IA: Botón para guardar --> se encarga de guardar la información y recordarle al usuario si aun le falta agregar alguna información o rellenar algún campo
-            Button botonGuardar = new Button("Guardar cita", event -> {
-
-                // Validación simple para cada uno de los campos del formulario para evitar cualquier error
-                if (nombreCliente.isEmpty() || idCliente.isEmpty() || servicios.getSelectedItems().isEmpty()
-                        || marcaVehiculo.isEmpty() || tipoVehiculo.getSelectedItems().isEmpty()
-                        || placaVehiculo.isEmpty() || fechaCita.isEmpty()) {
-                    Notification.show("⚠️ Por favor completa todos los campos antes de continuar.", 3000, Notification.Position.MIDDLE);
-
-                }
-                 else if (!(nombreCliente.getValue().matches("[a-zA-Z ]+"))) {
-
-                    Notification.show("⚠️ Ingresa valor valido, sin simbolos ni caracteres especiales", 3000, Notification.Position.MIDDLE);
-
-                    nombreCliente.clear();
-
-                } else if (idCliente.getValue().matches("[0-9]+") && !(idCliente.getValue().length() >= 8 && idCliente.getValue().length() <= 10) || idCliente.getValue().matches("[a-zA-Z ]+")){
-
-                    Notification.show("⚠️ Ingresa un ID / cedula valido", 3000, Notification.Position.MIDDLE);
-
-                    idCliente.clear();
-
-                }
-                else if ((numeroCliente.getValue().matches("[0-9]+")) && (!(numeroCliente.getValue().length() >= 1 && numeroCliente.getValue().length() <= 10)) || (numeroCliente.getValue().matches("[a-zA-Z ]+"))){
-
-                    Notification.show("⚠️ Ingresa un numero de tel / cel valido", 3000, Notification.Position.MIDDLE);
-
-                    numeroCliente.clear();
-
-                }
-                else if (!(marcaVehiculo.getValue().matches("[a-zA-Z ]+"))){
-
-                    Notification.show("⚠️ Ingresa un valor valido en la marca de vehiculo (solo letras)", 3000, Notification.Position.MIDDLE);
-
-                    marcaVehiculo.clear();
-
-                } else if (!(placaVehiculo.getValue().toUpperCase().matches("[A-Z]{3}[0-9]{3}"))){
-
-                    Notification.show("⚠️ Ingresa un placa valida (ABC123) para seguir", 3000, Notification.Position.MIDDLE);
-
-                    placaVehiculo.clear();
-
-                }
-                else {
-
-                    String citaInfo = String.format("Nombre: %s, ID: %s, Numero Cliente: %s, Servicios: %s, Marca: %s, Tipo. %s, Placa: %s, Fecha: %s",
-                            nombreCliente.getValue(),
-                            idCliente.getValue(),
-                            numeroCliente.getValue().toString(),
-                            servicios.getValue(),
-                            marcaVehiculo.getValue(),
-                            tipoVehiculo.getValue(),
-                            placaVehiculo.getValue(),
-                            fechaCita.getValue()
-                            );
-
-                    // IA: Notificación de confirmación
-                    Notification.show("✅ La cita ha sido asignada correctamente - Info. Cita: " + citaInfo, 8000, Notification.Position.MIDDLE);
-
-                    // IA: Obtener los valores seleccionados
-                    Set<String> serviciosSeleccionados = servicios.getSelectedItems();
-                    Set<String> tiposSeleccionados = tipoVehiculo.getSelectedItems();
-
-                    // IA: Limpieza opcional de campos --> se encarga de limpiar los campos para que el usuario no los tenga que borrar por sí mismo
-                    nombreCliente.clear();
-                    idCliente.clear();
-                    numeroCliente.clear();
-                    servicios.clear();
-                    marcaVehiculo.clear();
-                    tipoVehiculo.clear();
-                    placaVehiculo.clear();
-                    fechaCita.clear();
-
-                }
-
-            });
+            // IA: Botón para guardar --> se creará sin listener ahora, listener se agregará después de declarar todos los campos que usa
+            Button botonGuardar = new Button("Guardar cita");
 
             // Estilos para los multiples campos
 
@@ -329,8 +256,76 @@ public class IndexView extends VerticalLayout {
             fechaCita.setWidthFull();
             botonGuardar.setWidthFull();
 
+            // Opciones para agregar otro servicio a la orden y boton para hacerlo
+
+            // Titulo para el apartado de los servicios extra
+            H2 tituloServiciosExtra = new H2("Servicios extra");
+            tituloServiciosExtra.addClassName("tituloTabla-personalizado");
+
+            // Estilo para el título de los servicios
+            tituloServiciosExtra.getStyle()
+                    .set("font-family", "'Brush Script MT', cursive")
+                    .set("font-size", "50px")
+                    .set("font-weight", "bold")
+                    .set("color", "black");
+
+            // Creamos la lista de vehículos y el Grid antes de usarlo en el listener de guardarservicios
+            List<Vehicle> vehiculosEnTaller = new ArrayList<>();
+            Grid<Vehicle> grid = new Grid<>();
+
+             // IA: --- ComboBox de servicios extra ---
+             MultiSelectComboBox<String> serviciosExtra = new MultiSelectComboBox<>("Selecciona servicios extra");
+             serviciosExtra.setItems(
+                     "Lavado general",
+                     "Aspirado interior",
+                     "Pulida y encerado",
+                     "Diagnóstico electrónico"
+             );
+             serviciosExtra.setWidth("300px");
+
+             // IA: --- Botón para guardar ---
+             Button guardarservicios = new Button("Guardar servicio extra");
+
+             // IA: --- Acción del botón ---
+            guardarservicios.addClickListener(e -> {
+                // Obtener el vehículo seleccionado en el grid
+                Set<Vehicle> vehiculosSeleccionados = grid.getSelectedItems();
+
+                if (vehiculosSeleccionados == null || vehiculosSeleccionados.isEmpty()) {
+                    Notification.show("⚠️ Debes seleccionar un vehículo para agregar servicios extra", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
+
+                Set<String> extras = serviciosExtra.getSelectedItems();
+                if (extras == null || extras.isEmpty()) {
+                    Notification.show("⚠️ No seleccionaste ningún servicio extra", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
+
+                // Aplicar los servicios extra seleccionados al vehículo seleccionado
+                for (Vehicle vehiculo : vehiculosSeleccionados) {
+                    vehiculo.addServiciosExtra(extras);
+                }
+
+                // Refrescar la tabla para mostrar los cambios
+                grid.getDataProvider().refreshAll();
+
+                Notification.show("✅ Servicios extra aplicados al vehículo seleccionado", 3000, Notification.Position.MIDDLE);
+            });
+
+            // Estilo para el boton
+
+            guardarservicios.getStyle()
+                    .set("background-color", "red")
+                    .set("color", "white")
+                    .set("border-radius", "10px")
+                    .set("padding", "10px 25px");
+
+            // .setWidthFull --> lo utilizamos para que los campos tomen todo el espacio del Layout padre (en este caso un VerticalLayout)
+            serviciosExtra.setWidthFull();
+
             // Agregamos los componentes al leftSide
-            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, numeroCliente, servicios, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar);
+            leftSide.add(tituloFormulario, nombreCliente, idCliente, idCliente, numeroCliente, servicios, marcaVehiculo, tipoVehiculo, placaVehiculo, fechaCita, botonGuardar, tituloServiciosExtra, serviciosExtra, guardarservicios);
 
             // RightSide --> Mostrar servicios (título, imagenes de los servicios, definicion de que es cada uno)
 
@@ -362,8 +357,171 @@ public class IndexView extends VerticalLayout {
             // IA: Agregar las imágenes al recuadroServicios
             recuadroServicios.add(img1, img2, img3, img4);
 
+            // Tendra la tabla que muestra los vehiculos que estan en el taller
+
+            // Título para la tabla de vehículos en taller
+            H2 tituloVehiculos = new H2("Vehículos en taller");
+            tituloVehiculos.addClassName("tituloTabla-personalizado");
+
+            // Estilo para el título de vehículos
+            tituloVehiculos.getStyle()
+                    .set("font-family", "'Brush Script MT', cursive")
+                    .set("font-size", "50px")
+                    .set("font-weight", "bold")
+                    .set("color", "black");
+
+             // --- Configurar la tabla (Grid) ---
+             grid.addColumn(Vehicle::getPlaca).setHeader("Placa del vehículo");
+             grid.addColumn(Vehicle::getMarca).setHeader("Marca");
+             grid.addColumn(Vehicle::getTipoVehiculo).setHeader("Tipo de vehículo");
+             // Mostrar los servicios principales como lista
+             grid.addComponentColumn(v -> {
+                 Div container = new Div();
+                 container.getStyle().set("display", "flex").set("flex-direction", "column").set("gap", "2px");
+                 for (String s : v.getServiciosList()) {
+                     container.add(new Span(s));
+                 }
+                 return container;
+             }).setHeader("Servicios");
+             // Mostrar los servicios extra como lista
+             grid.addComponentColumn(v -> {
+                 Div container = new Div();
+                 container.getStyle().set("display", "flex").set("flex-direction", "column").set("gap", "2px");
+                 for (String s : v.getServiciosExtra()) {
+                     container.add(new Span(s));
+                 }
+                 return container;
+             }).setHeader("Servicios Extra");
+
+            grid.setWidth("600px");
+            grid.getStyle()
+                    .set("border", "2px solid #1E3A8A")
+                    .set("border-radius", "10px")
+                    .set("background-color", "#F8FAFC");
+
+            grid.setWidthFull();
+
+            // Permitir selección de UN SOLO vehículo para facturar
+            grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+
+            // Botón Facturar para eliminar vehículos seleccionados
+            Button facturarButton = new Button("Facturar");
+            facturarButton.getStyle()
+                    .set("background-color", "green")
+                    .set("color", "white")
+                    .set("border-radius", "10px")
+                    .set("padding", "10px 25px")
+                    .set("margin-top", "15px");
+
+            facturarButton.setWidthFull();
+
+            facturarButton.addClickListener(e -> {
+                Set<Vehicle> vehiculosSeleccionados = grid.getSelectedItems();
+
+                if (vehiculosSeleccionados == null || vehiculosSeleccionados.isEmpty()) {
+                    Notification.show("⚠️ Debes seleccionar un vehículo para facturar", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
+
+                if (vehiculosSeleccionados.size() > 1) {
+                    Notification.show("⚠️ Solo puedes facturar un vehículo a la vez", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
+
+                // Eliminar el vehículo seleccionado de la lista
+                vehiculosEnTaller.removeAll(vehiculosSeleccionados);
+                grid.setItems(vehiculosEnTaller);
+
+                Notification.show("✅ Vehículo facturado y eliminado de la tabla", 3000, Notification.Position.MIDDLE);
+            });
+
+            // --- Listener único del botón guardar ---
+            botonGuardar.addClickListener(event -> {
+                // Validación simple para cada uno de los campos del formulario para evitar cualquier error
+                if (nombreCliente.isEmpty() || idCliente.isEmpty() || numeroCliente.isEmpty()
+                        || servicios.getSelectedItems().isEmpty()
+                        || marcaVehiculo.isEmpty() || tipoVehiculo.isEmpty()
+                        || placaVehiculo.isEmpty() || fechaCita.isEmpty()) {
+                    Notification.show("⚠️ Por favor completa todos los campos antes de continuar.", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
+
+                if (!(nombreCliente.getValue().matches("[a-zA-Z ]+"))) {
+                    Notification.show("⚠️ Ingresa valor valido, sin simbolos ni caracteres especiales", 3000, Notification.Position.MIDDLE);
+                    nombreCliente.clear();
+                    return;
+                }
+
+                String idStr = String.valueOf(idCliente.getValue());
+                if (idStr.length() < 8 || idStr.length() > 10){
+                    Notification.show("⚠️ Ingresa un ID / cedula valido", 3000, Notification.Position.MIDDLE);
+                    idCliente.clear();
+                    return;
+                }
+
+                String numStr = String.valueOf(numeroCliente.getValue());
+                if (numStr.length() < 8 || numStr.length() > 11){
+                    Notification.show("⚠️ Ingresa un numero de tel / cel valido", 3000, Notification.Position.MIDDLE);
+                    numeroCliente.clear();
+                    return;
+                }
+
+                if (!(marcaVehiculo.getValue().matches("[a-zA-Z ]+"))){
+                    Notification.show("⚠️ Ingresa un valor valido en la marca de vehiculo (solo letras)", 3000, Notification.Position.MIDDLE);
+                    marcaVehiculo.clear();
+                    return;
+                }
+
+                if (!(placaVehiculo.getValue().toUpperCase().matches("[A-Z]{3}[0-9]{3}"))){
+                    Notification.show("⚠️ Ingresa un placa valida (ABC123) para seguir", 3000, Notification.Position.MIDDLE);
+                    placaVehiculo.clear();
+                    return;
+                }
+
+                // Construir las cadenas de servicios
+                String serviciosSeleccionadosStr = String.join(", ", servicios.getSelectedItems());
+                // Los servicios extra al crear la cita deben quedar vacíos hasta que se apliquen vía "Guardar servicio extra"
+                Set<String> serviciosExtraSet = new LinkedHashSet<>();
+
+                // Crear objeto Vehicle y añadirlo a la lista
+                Vehicle nuevo = new Vehicle(
+                        placaVehiculo.getValue().toUpperCase(),
+                        marcaVehiculo.getValue(),
+                        tipoVehiculo.getValue(),
+                        serviciosSeleccionadosStr,
+                        serviciosExtraSet
+                );
+                vehiculosEnTaller.add(nuevo);
+                grid.setItems(vehiculosEnTaller);
+
+                // IA: Notificación de confirmación
+                String citaInfo = String.format("Nombre: %s, ID: %s, Numero Cliente: %s, Servicios: %s, Marca: %s, Tipo: %s, Placa: %s, Fecha: %s",
+                        nombreCliente.getValue(),
+                        idCliente.getValue(),
+                        numeroCliente.getValue().toString(),
+                        serviciosSeleccionadosStr,
+                        marcaVehiculo.getValue(),
+                        tipoVehiculo.getValue(),
+                        placaVehiculo.getValue(),
+                        fechaCita.getValue()
+                );
+
+                Notification.show("✅ La cita ha sido asignada correctamente - Info. Cita: " + citaInfo, 8000, Notification.Position.MIDDLE);
+
+                // IA: Limpieza opcional de campos
+                nombreCliente.clear();
+                idCliente.clear();
+                numeroCliente.clear();
+                servicios.clear();
+                marcaVehiculo.clear();
+                tipoVehiculo.clear();
+                placaVehiculo.clear();
+                fechaCita.clear();
+                serviciosExtra.clear();
+            });
+
             // Agregamos al RightSide
-            rightSide.add(tituloServicios, recuadroServicios);
+            rightSide.add(tituloServicios, recuadroServicios, tituloVehiculos, grid, facturarButton);
 
             // Centramos los componentes del rigthSide y leftSide
             rightSide.setAlignItems(Alignment.CENTER);
@@ -449,4 +607,56 @@ public class IndexView extends VerticalLayout {
         }
     }
 
-}
+    // POJO para representar un vehículo en la tabla
+     private static class Vehicle {
+         private final String placa;
+         private final String marca;
+         private final String tipoVehiculo;
+         private final String servicios;
+         // ahora guardamos los servicios extra en un Set mutable para evitar duplicados
+         private final Set<String> serviciosExtra;
+
+        public Vehicle(String placa, String marca, String tipoVehiculo, String servicios, Set<String> serviciosExtra) {
+            this.placa = placa;
+            this.marca = marca;
+            this.tipoVehiculo = tipoVehiculo;
+            this.servicios = servicios;
+            // inicializar con LinkedHashSet para mantener el orden de inserción
+            this.serviciosExtra = serviciosExtra != null ? new LinkedHashSet<>(serviciosExtra) : new LinkedHashSet<>();
+        }
+
+        public String getPlaca() {
+            return placa;
+        }
+
+        public String getMarca() {
+            return marca;
+        }
+
+        public String getTipoVehiculo() {
+            return tipoVehiculo;
+        }
+
+        public String getServicios() {
+            return servicios;
+        }
+
+        public Set<String> getServiciosExtra() {
+            return serviciosExtra;
+         }
+
+        // Devuelve la lista de servicios principales (separados por coma) como lista
+        public List<String> getServiciosList() {
+            if (servicios == null || servicios.trim().isEmpty()) return Collections.emptyList();
+            String[] parts = servicios.split(",\\s*");
+            return Arrays.asList(parts);
+        }
+
+         // Añade nuevos servicios extra, evitando duplicados
+         public void addServiciosExtra(Collection<String> extras) {
+             if (extras == null || extras.isEmpty()) return;
+             this.serviciosExtra.addAll(extras);
+         }
+     }
+
+ }
