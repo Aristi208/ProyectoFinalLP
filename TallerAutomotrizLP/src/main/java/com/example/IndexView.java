@@ -191,7 +191,7 @@ public class IndexView extends VerticalLayout {
             idCliente.setHelperText("8 - 10 digitos");
 
             IntegerField numeroCliente = new IntegerField("numero del cliente");
-            numeroCliente.setHelperText("10 digitos");
+            numeroCliente.setHelperText("9 digitos");
 
             // IA: ComboBox múltiple para Servicios --> nos despliega un mini menu en donde podemos seleccionar los diferentes tipos de servicio
             CheckboxGroup<String> servicios = new CheckboxGroup<>();

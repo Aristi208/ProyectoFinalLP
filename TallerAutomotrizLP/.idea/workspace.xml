@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7410dc62-7c9f-42f8-8121-ddb1dad081ac" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Controller/Procesos.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/Precios.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/ReparacioneseInsumos.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.copilot-plugin" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.copilot-plugin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/IndexView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/IndexView.java" afterDir="false" />
